@@ -1,0 +1,18 @@
+language: python
+
+python:
+  - 2.7
+  - 3.3
+  - 3.4
+  - 3.5
+  - pypy
+  - pypy3
+
+services:
+  - mongodb
+
+script: python setup.py test
+
+install:
+    # Temporary solution for Travis CI multiprocessing issue #943
+    - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm

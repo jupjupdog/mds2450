@@ -17,7 +17,7 @@ int main(void)
       CURLcode res;
 
       curl = curl_easy_init();
-      char* url = "http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getCtprvnMesureSidoLIst?sidoName=%EC%9D%B8%EC%B2%9C&searchCondition=DAILY&pageNo=1&numOfRows=10&ServiceKey=qNTKGUYOFgEj3m6dUMXBJ1ZLEPBbBX%2BQXY3d%2B77vxZgMC4RJ6TCp%2BtUw12hW%2FLgWj%2BxU10watODF73O%2Bx1essg%3D%3D&_returnType=json";
+      char* url = "http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getCtprvnMesureSidoLIst?sidoName=%EC%9D%B8%EC%B2%9C&searchCondition=DAILY&pageNo=1&numOfRows=10&ServiceKey=qNTKGUYOFgEj3m6dUMXBJ1ZLEPBbBX%2BQXY3d%2B77vxZgMC4RJ6TCp%2BtUw12hW%2FLgWj%2BxU10watODF73O%2Bx1essg%3D%3D&_returnType=json&ver=1.3";
       if(curl) {
 	  curl_easy_setopt(curl, CURLOPT_URL, url);
 	/* example.com is redirected, so we tell libcurl to follow redirection */ 
