@@ -1,5 +1,5 @@
- # -*- coding: utf-8 -*-
-
+# -*- coding: utf-8 -*-
+#!/usr/bin/env python
 
 from urllib2 import Request, urlopen
 from urllib import urlencode, quote_plus,unquote
