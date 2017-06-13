@@ -97,6 +97,23 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 		
 		city_dist= rere[0].split(',')
 		print city_dist
+		
+		seoul ={'mapo':'마포구','gangnam':'강남구','gangseo':'강서구','gangbok':'강북구','gangdong':'강동구'}
+		incheon = {'namdong':'남동구','yeunsu':'연수구','bupyung':'부평구','seogu':'서구','donggu':'동구'}
+		if city_dist[0] == "seoul":
+			city_dist[0]="서울특별시"
+			for dist in seoul.keys():
+				if dist == city_dist[1]:
+					city_dist[1]=seoul[dist]
+					break
+		elif city_dist[0] == "incheon":
+			city_dist[0]="인천광역시"
+			for dist in incheon.keys():
+				if dist == city_dist[1]:
+					city_dist[1]=incheon[dist]
+					break
+
+
 		xy_obj = findXY(city_dist[0],city_dist[1])
 		
 
