@@ -37,7 +37,8 @@ def getWeather(xy):
 	near_time="%02d%02d" % (aaa.tm_hour, aaa.tm_min)
 	
 	get_time=int(near_time)
-	exec_time=0200
+	exec_time=200
+	tmp=0
 	for time in base_time:
 		if get_time < time:
 			exec_time = tmp
@@ -86,27 +87,36 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 		print("clinet access :{0}".format(self.client_address[0]))
 		sock = self.request
 		rbuff = sock.recv(1024)
-		received = rbuff.decode("UTF-8")
-		print(received)
-		city_dist= received.split(',')
+		print type(rbuff)
+		received = rbuff.decode('utf-8').encode('utf-8')
+		
+		loc= received.find('\n')
+		if loc>0:
+			received.strip('\n')
+		rere = received.splitlines()
+		
+		city_dist= rere[0].split(',')
+		print city_dist
 		xy_obj = findXY(city_dist[0],city_dist[1])
 		
+
 		getWeather(xy_obj[0])
 		print xy_obj[0]['x']
 
 		inf_weather = coll_now.find({'nx':xy_obj[0]['x'],'ny':xy_obj[0]['y']},{'_id':0,'nx':0,'ny':0,'fcastTime':0,'baseDate':0,'baseTime':0}).sort([('baseDate',-1),('baseTime',-1)]).limit(1)
 
 		mise=coll_seoul.find({'city':"마포구"},{'_id':0,'city':0}).sort([('time',-1)]).limit(1)
-		if city_dist[0] ==u'서울특별시':
+		if city_dist[0] =='서울특별시':
 			mise=coll_seoul.find({'city':city_dist[1]},{'_id':0,'city':0}).sort([('time',-1)]).limit(1)
 			#print type(mise)	
-		elif city_dist[1] == u'인천광역시':
+		elif city_dist[1] == '인천광역시':
 			mise=coll_incheon.find({'city':city_dist[1]},{'_id':0,'city':0}).sort([('time',-1)]).limit(1)
 		
 		send_dic = inf_weather[0]
 		print type(send_dic)
 		send_dic.update(mise[0])
-		sock.send(str(send_dic).encode('utf-8'))
+		add_rn = str(send_dic)+'\n'
+		sock.send(add_rn.encode('utf-8'))
 		sock.close()
 
 
