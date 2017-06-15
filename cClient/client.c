@@ -8,7 +8,7 @@
 #include <netdb.h> 
 
 #define BUFSIZE 1024
-
+#define HOSTNAME "127.0.0.1"
 typedef struct _weather{
 	int pm10;
 	int pm25;
@@ -21,6 +21,7 @@ typedef struct _weather{
 	char* time;
 } Weather;
 
+
 char *form[9]={"pm10","pm25","T3H","R06","SKY","POP","REH","PTY","time"};
 /* 
  * error - wrapper for perror
@@ -30,7 +31,7 @@ void error(char *msg) {
 	exit(0);
 }
 char *replaceValue(char *strInput, const char *strTarget, const char *strChange);
-
+Weather *parsingData(char *buf);
 
 int main(void){
 	int sockfd, portno, n;
@@ -38,33 +39,20 @@ int main(void){
 	struct hostent *server;
 	char * hostname;
 	char buf[BUFSIZE];
-	printf("start");
+	printf("start\n");
 
-//	if(argc != 3){
-//		fprint(stderr,"usage : %s <hostname> <port>\n", argv[0]);
-//		exit(0);
-//	}
-//	hostname = argv[1];
-//	portno = atoi(argv[2]);
+
 
 	sockfd = socket(AF_INET,SOCK_STREAM,0);
 	if(sockfd<0)
 		error("Error opening socket");
-	printf("whar");	
-	//server = gethostbyname(hostname);
-	//if(server==NULL){
-	//	fprintf(stderr, "ERROR, no such host as %s\n",hostname);
-	//	exit(0);
-	//}
-	
-	printf("1");	
+
+		
 	bzero((char *)&serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family= AF_INET;
 	serveraddr.sin_port = htons(56789);
-	serveraddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	serveraddr.sin_addr.s_addr = inet_addr(HOSTNAME);
 
-
-	printf("2");	
 	if(connect(sockfd,(struct sockaddr*) &serveraddr, sizeof(serveraddr))<0)
 		error("ERROR connecting");
 
@@ -77,19 +65,28 @@ int main(void){
 	if(n<0)
 		error("ERROR writinf to socket");
 	
-	printf("3");	
-	bzero(buf,BUFSIZE);
 
-	FILE *f;
-	f=fopen("get.txt","w");
+	bzero(buf,BUFSIZE);
 	
 	n=read(sockfd, buf, BUFSIZE);
 	
 	if(n<0)
 		error("ERROR writing to socket");
-	fwrite(buf,sizeof(char),sizeof(buf),f);
-	printf("echo: %s",buf);
 	
+///////////////////////
+	
+	Weather *weatherData;
+	weatherData = parsingData(buf);
+
+	//printf("%d ! %d  !  %d !  %d !  %d  !  %d ! %d !  %d  ! %s", weatherData->pm10,weatherData->pm25,weatherData->temper,weatherData->rain,weatherData->sky,weatherData->rainChance,weatherData->humid,weatherData->rainForm,weatherData->time);
+
+	return 0;
+}
+
+Weather *parsingData(char *buf){
+	Weather * weatherData = malloc(sizeof(Weather));
+
+	char* tok[15];
 	char u[]="u'";
 	char up[]="'";
     
@@ -101,56 +98,52 @@ int main(void){
 	final = replaceValue(result,"}","");
 	printf("%s",final);
 	int i=0;
-	char* tok[15];
+	
 	char * ptr=strtok(final,",");
 	while(ptr != NULL){
 		tok[i]=ptr;
 		i++;
 		ptr = strtok(NULL,",");
 	}
-	
-	Weather weatherData;
 	int j = i;
 	int k;
 	for(i=0;i<j;i++){
-		//printf("%s\n",tok[i]);
+
 		char *tmp,*tmp2;
 		tmp = strtok(tok[i],":");
 		tmp=replaceValue(tmp," ","");
 		tmp2 = strtok(NULL,":");
 		tmp2=replaceValue(tmp2," ","");
-		//printf("%s-->",tmp);
-		//printf("%s\n",tmp2);
 
 		for(k=0;k<9;k++){
 			if(strcmp(form[k], tmp)==0){
 				switch(k){	
 				case 0:
-					weatherData.pm10 = atoi(tmp2);
+					weatherData->pm10 = atoi(tmp2);
 					break;
 				case 1:
-					weatherData.pm25 = atoi(tmp2);
+					weatherData->pm25 = atoi(tmp2);
 					break;
 				case 2:
-					weatherData.temper = atoi(tmp2);
+					weatherData->temper = atoi(tmp2);
 					break;
 				case 3:
-					weatherData.rain = atoi(tmp2);
+					weatherData->rain = atoi(tmp2);
 					break;
 				case 4:
-					weatherData.sky = atoi(tmp2);
+					weatherData->sky = atoi(tmp2);
 					break;
 				case 5: 
-					weatherData.rainChance = atoi(tmp2);
+					weatherData->rainChance = atoi(tmp2);
 					break;
 				case 6:
-					weatherData.humid = atoi(tmp2);
+					weatherData->humid = atoi(tmp2);
 					break;
 				case 7:
-					weatherData.rainForm = atoi(tmp2);
+					weatherData->rainForm = atoi(tmp2);
 					break;
 				case 8:
-					weatherData.time = tmp2;
+					weatherData->time = tmp2;
 					break;
 				}
 				break;
@@ -159,9 +152,7 @@ int main(void){
 		}
 
 	}
-	//printf("%d ! %d  !  %d !  %d !  %d  !  %d ! %d !  %d  ! %s", weatherData.pm10,weatherData.pm25,weatherData.temper,weatherData.rain,weatherData.sky,weatherData.rainChance,weatherData.humid,weatherData.rainForm,weatherData.time);
-
-	return 0;
+	return weatherData;
 }
 char *replaceValue(char *strInput, const char *strTarget, const char *strChange)
 {

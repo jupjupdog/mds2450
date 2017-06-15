@@ -88,6 +88,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 		sock = self.request
 		rbuff = sock.recv(1024)
 		print type(rbuff)
+		print rbuff
 		received = rbuff.decode('utf-8').encode('utf-8')
 		
 		loc= received.find('\n')
@@ -96,6 +97,8 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 		rere = received.splitlines()
 		
 		city_dist= rere[0].split(',')
+		city_dist[0]=city_dist[0].strip()
+		city_dist[1]=city_dist[1].strip()
 		print city_dist
 		
 		seoul ={'mapo':'마포구','gangnam':'강남구','gangseo':'강서구','gangbok':'강북구','gangdong':'강동구'}
@@ -105,12 +108,16 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 			for dist in seoul.keys():
 				if dist == city_dist[1]:
 					city_dist[1]=seoul[dist]
+					print city_dist[1]
 					break
 		elif city_dist[0] == "incheon":
 			city_dist[0]="인천광역시"
+			print city_dist[0]
 			for dist in incheon.keys():
+				#print city_dist[1]
 				if dist == city_dist[1]:
 					city_dist[1]=incheon[dist]
+					print city_dist[1]
 					break
 
 
@@ -138,7 +145,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 
 
 if __name__ == '__main__':
-	HOST = '127.0.0.1'
+	HOST = ''
 	PORT = 56789
 	BUFSIZE = 1024
 	ADDR = (HOST,PORT)

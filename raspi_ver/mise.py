@@ -1,4 +1,3 @@
-
 # -*- coding:utf-8 -*-
 
 from urllib2 import Request, urlopen
@@ -9,6 +8,7 @@ url = 'http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/
 queryParams = '?' + urlencode({quote_plus('_returnType'):'json', quote_plus('ServiceKey') : decode_key, quote_plus('pageNo') : '1',quote_plus('numOfRows'):'9',quote_plus('ver'):'1.3',quote_plus('searchCondition'):'HOUR',quote_plus('sidoName'):'인천' })
 
 request = Request(url + queryParams)
+print url+queryParams
 request.get_method = lambda: 'GET'
 response_body = urlopen(request).read()
 
